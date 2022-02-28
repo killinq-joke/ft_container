@@ -220,4 +220,11 @@ namespace ft
         return (lhs.base() - rhs.base());
     }
 
+    template <typename T>
+    std::ostream& operator<< (std::ostream& out, const ft::random_access_iterator<T>& rai)
+    {
+        out << rai.base();
+        return out;
+    }
+
 }
