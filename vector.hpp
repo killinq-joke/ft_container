@@ -6,6 +6,7 @@
 # include <tgmath.h>
 # include "./utils/utils.hpp"
 # include "./utils/random_access_iterator.hpp"
+# include <iterator>
 
 namespace ft
 {
@@ -27,7 +28,7 @@ namespace ft
 		typedef typename ft::iterator_traits<iterator>::difference_type		difference_type; 
 		typedef typename allocator_type::size_type          				size_type;
 		
-		explicit vector (const allocator_type& alloc = allocator_type()) : _alloc(alloc), _start(nullptr), _capacity(0)
+		explicit vector (const allocator_type& alloc = allocator_type()) : _alloc(alloc), _start(nullptr), _size(0), _capacity(0)
 		{}
 
 		explicit vector (size_type n, const value_type& val = value_type(),
@@ -45,18 +46,18 @@ namespace ft
 						const allocator_type& alloc = allocator_type(),
 						typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = nullptr) : _alloc(alloc)
 		{
-			if (!ft::is_ft_iterator_tagged<typename ft::iterator_traits<InputIterator>::iterator_category>::value)
-				throw (ft::InvalidIteratorException<typename ft::is_ft_iterator_tagged<typename ft::iterator_traits<InputIterator>::iterator_category >::type>());
-			for (size_type i = 0; first != last; first++, i++)
+			difference_type n = ft::distance(first, last);
+
+			_size = n;
+			_capacity = n;
+			_start = _alloc.allocate(n);
+			for (difference_type i = 0; i < n; i++)
 			{
-				if (_capacity == _size)
-					this->_increase_capacity();
 				_alloc.construct(&_start[i], *first);
-				_size++;
 			}
 		}
 		
-		vector (const vector& x) : _alloc(x.get_allocator()), _size(x.size())
+		vector (const vector& x) : _alloc(x.get_allocator()), _size(x.size()), _capacity(0)
 		{
 			*this = x;
 		}
@@ -67,14 +68,32 @@ namespace ft
 			_alloc.deallocate(_start, _capacity);
 		}
 					
+		void show_vector()
+		{
+			std::cout << "capacity == " << this->capacity() << std::endl;
+			std::cout << "size == " << this->size() << std::endl;
+			// std::cout << "begin == " << x.begin() << std::endl;
+			// std::cout << "end == " << x.end() << std::endl;
+			std::cout << "[";
+			for (size_t i = 0; i < this->size(); i++)
+			{
+				// std::cout << "it == " << it << std::endl;
+				std::cout <<  _start[i] << ", ";
+			}
+			std::cout << "]" << std::endl;
+		}
+
 		vector &operator=(const vector& x)
 		{
 			this->clear();
+			_alloc = x.get_allocator();
 			this->insert(this->end(), x.begin(), x.end());
+			show_vector();
 			return *this;
 		}
 
 		iterator begin() { return _start; };
+
 		const_iterator begin() const { return _start; }
 
 		iterator end()
@@ -169,27 +188,25 @@ namespace ft
 		void assign(InputIterator first, InputIterator last,
 		typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = nullptr)
 		{
-			bool is_valid;
-
-			if (!(is_valid = ft::is_ft_iterator_tagged<typename ft::iterator_traits<InputIterator>::iterator_category>::value))
-				throw (ft::InvalidIteratorException<typename ft::is_ft_iterator_tagged<typename ft::iterator_traits<InputIterator>::iterator_category >::type>());
+			if (!ft::distance(first, last))
+				return ;
 			this->clear();
-			for (iterator it = first; it != last; it++)
+			//for (iterator it = first; it != last; it++)
+			while (first != last)
 			{
-				if (_size == _capacity)
-					this->_increase_capacity();
-				this->push_back(*it);
+//				this->push_back(*it);
+				first++;
 			}
 		}
 		
 		void assign(size_type n, const value_type& val)
 		{
+			if (!n)
+				return ;
 			this->clear();
-			_alloc.deallocate(_start, _capacity);
+			_start = _alloc.allocate(n);
 			for (size_type i = 0; i < n; i++)
 			{
-				if (_capacity == _size)
-					this->_increase_capacity();
 				_alloc.construct(&_start[i], val);
 				_size++;
 			}
@@ -197,10 +214,7 @@ namespace ft
 
 		void push_back(const value_type& val)
 		{
-			if (_size == _capacity)
-				this->_increase_capacity();
-			_alloc.construct(this->end().base(), val);
-			_size++;
+			this->insert(this->end(), val);
 		}
 
 		void pop_back()
@@ -214,85 +228,93 @@ namespace ft
 
 		iterator insert(iterator position, const value_type& val)
 		{
-			if (_size == _capacity)
+			size_type	diff;
+			iterator	it;
+			size_type	i;
+
+			diff = this->end() - position;
+			if (_size >= _capacity)
 				this->_increase_capacity();
-			*(this->end()) = 42;
-			*(this->end()-1) = 43;
-			std::cout << position.base() << std::endl;
-			std::cout << this->begin() << std::endl;
-			std::cout << this->end() << std::endl;
-			// for (iterator it = this->end(); it != position; it--)
-			// {
-			// 	*it = *(it - 1);
-			// }
-			*position = val;
+			it = this->end(); 
+			i = 0;
+			while (i < diff)
+			{
+				*it = *(it - 1);
+				i++;
+				it--;
+			}
+			*it = val;
 			_size++;
-			return position;
+			return it;
 		}
 
 		void insert(iterator position, size_type n, const value_type& val)
 		{
-			iterator it = this->end() + n - 1;
+			size_type	diff;
+			iterator	it;
 
+			diff = abs(this->end() - position);
 			while (_size + n > _capacity)
 				this->_increase_capacity();
-			while (it != (position + n))
+			it = (this->end() + n - 1);
+			while (diff--)
 			{
 				*it = *(it - n);
 				it--;
 			}
-			while (it != position)
+			_size += n;
+			while (n--)
 			{
 				*it = val;
 				it--;
 			}
-			*position = val;
-			_size += n;
 		}
 
 		template <class InputIterator>
 			void insert(iterator position, InputIterator first, InputIterator last,
 			typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = nullptr)
 		{
-			bool is_valid;
+			size_type	diff;
+			size_type	n;
+			iterator	it;
 
-			if (!(is_valid = ft::is_ft_iterator_tagged<typename ft::iterator_traits<InputIterator>::iterator_category >::value))
-				throw (ft::InvalidIteratorException<typename ft::is_ft_iterator_tagged<typename ft::iterator_traits<InputIterator>::iterator_category >::type>());
-			
-			difference_type diff = last - first;
-
-			while (_size + diff > _capacity)
+			diff = abs(this->end() - position);
+			n = 0;
+			while (first++ != last)
+			{
+				n++;
+			}
+			std::cout << n << std::endl;
+			// n && n--;
+			std::cout << n << std::endl;
+			while (_size + n > _capacity)
 				this->_increase_capacity();
-			iterator it = this->end() + diff - 1;
-			while (it != (position + diff))
+			it = (this->end() + n - 1);
+			while (diff--)
 			{
-				*it = *(it - diff);
+				*it = *(it - n);
 				it--;
 			}
-			while (it != position && last != first)
+			_size += n;
+			while (n--)
 			{
-				*it = *last;
-				last--;
+				*it = *(--last);
 				it--;
 			}
-			*position = *first;
-			_size += diff;
 		}
 
 		iterator erase(iterator position)
 		{
-			iterator it;
-
 			if (_size)
 			{
-				_alloc.destroy(*position);
-				while (position != this->end())
+				_alloc.destroy(&(*position));
+				for (iterator it = position; it != this->end(); it++)
 				{
 					*it = *(it + 1);
-					it++;
 				}
 				_size--;
 			}
+			return position;
 		}
 
 		iterator erase(iterator first, iterator last)
@@ -303,7 +325,7 @@ namespace ft
 			{
 				while (first != last)
 				{
-					_alloc.destroy(*first);
+					_alloc.destroy(&(*first));
 					first++;
 				}
 				while (first != this->end())
@@ -313,6 +335,7 @@ namespace ft
 				}
 				_size -= diff;
 			}
+			return first;
 		}
 
 		void swap(vector& x)
@@ -325,7 +348,6 @@ namespace ft
 
 		void clear()
 		{
-			std::cout << "size == " << _size << std::endl;
 			while (_size)
 			{
 				_alloc.destroy(&_start[_size - 1]);

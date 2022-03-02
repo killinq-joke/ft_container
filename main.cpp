@@ -17,14 +17,16 @@ template <typename T>
 void show_vector(ft::vector<T>& x)
 {
     std::cout << "capacity == " << x.capacity() << std::endl;
-    // std::cout << "size == " << x.size() << std::endl;
+    std::cout << "size == " << x.size() << std::endl;
     // std::cout << "begin == " << x.begin() << std::endl;
     // std::cout << "end == " << x.end() << std::endl;
+    std::cout << "[";
     for (size_t i = 0; i < x.size(); i++)
     {
         // std::cout << "it == " << it << std::endl;
-        std::cout << "x["<<i<<"] == " << x[i] << std::endl;
+        std::cout <<  x[i] << ", ";
     }
+    std::cout << "]" << std::endl;
 }
 
 int main()
@@ -37,7 +39,12 @@ int main()
     v1.insert(v1.begin(), 3);
     show_vector(v1);
     v0.insert(v0.begin(), 2);
+    v0.insert(v0.begin(), 3, -1);
+    v0.insert(v0.end(), 3, 11);
     show_vector(v0);
+    v0.insert(v0.begin() + 2, v1.begin(), v1.end());
+    show_vector(v0);
+    // std::cout << v0.begin() + 2 << std::endl;
 
     return (0);
 }
