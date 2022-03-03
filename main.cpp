@@ -33,18 +33,19 @@ int main()
 {
     std::vector<int> v1(2, -4);
     std::vector<int> v2(v1);
-    ft::vector<int> v0(1, 1);
+    ft::vector<int> v0;
     // ft::vector<int> v01(v0);
 
     v1.insert(v1.begin(), 3);
     show_vector(v1);
-    v0.insert(v0.begin(), 2);
-    v0.insert(v0.begin(), 3, -1);
-    v0.insert(v0.end(), 3, 11);
+    // v0.insert(v0.begin(), 2);
+    // v0.insert(v0.begin(), 3, -1);
+    // v0.insert(v0.end(), 3, 11);
     show_vector(v0);
-    v0.insert(v0.begin() + 2, v1.begin(), v1.end());
+    // v0.insert(v0.begin() + 2, v1.begin(), v1.end());
+    v0.push_back(255);
+    v0.push_back(0);
     show_vector(v0);
-    // std::cout << v0.begin() + 2 << std::endl;
 
     return (0);
 }

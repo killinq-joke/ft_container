@@ -88,7 +88,7 @@ namespace ft
 			this->clear();
 			_alloc = x.get_allocator();
 			this->insert(this->end(), x.begin(), x.end());
-			show_vector();
+			// show_vector();
 			return *this;
 		}
 
@@ -132,11 +132,12 @@ namespace ft
 					this->push_back(val);
 				}
 			}
-			else if (n < _size)
+			else
 			{
-				for (; n < _size; n++)
+				while (n < _size)
 				{
 					_alloc.destroy(&_start[n]);
+					_size--;
 				}
 			}
 		}
@@ -188,28 +189,27 @@ namespace ft
 		void assign(InputIterator first, InputIterator last,
 		typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = nullptr)
 		{
-			if (!ft::distance(first, last))
-				return ;
 			this->clear();
-			//for (iterator it = first; it != last; it++)
 			while (first != last)
 			{
-//				this->push_back(*it);
+				this->push_back(*first);
 				first++;
 			}
+			// std::cerr << "capacity == " << capacity() << std::endl;
 		}
 		
 		void assign(size_type n, const value_type& val)
 		{
+			this->clear();
 			if (!n)
 				return ;
-			this->clear();
-			_start = _alloc.allocate(n);
+			// _start = _alloc.allocate(n);
 			for (size_type i = 0; i < n; i++)
 			{
-				_alloc.construct(&_start[i], val);
-				_size++;
+				// _alloc.construct(&_start[i], val);
+				this->push_back(val);
 			}
+			// std::cerr << "capacity == " << capacity() << std::endl;
 		}
 
 		void push_back(const value_type& val)
@@ -284,9 +284,6 @@ namespace ft
 			{
 				n++;
 			}
-			std::cout << n << std::endl;
-			// n && n--;
-			std::cout << n << std::endl;
 			while (_size + n > _capacity)
 				this->_increase_capacity();
 			it = (this->end() + n - 1);
