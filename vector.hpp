@@ -61,7 +61,16 @@ namespace ft
 		{
 			*this = x;
 		}
-		
+
+		vector &operator=(const vector& x)
+		{
+			this->clear();
+			_alloc = x.get_allocator();
+			this->insert(this->end(), x.begin(), x.end());
+			// show_vector();
+			return *this;
+		}
+
 		~vector()
 		{
 			this->clear();
@@ -81,15 +90,6 @@ namespace ft
 				std::cout <<  _start[i] << ", ";
 			}
 			std::cout << "]" << std::endl;
-		}
-
-		vector &operator=(const vector& x)
-		{
-			this->clear();
-			_alloc = x.get_allocator();
-			this->insert(this->end(), x.begin(), x.end());
-			// show_vector();
-			return *this;
 		}
 
 		iterator begin() { return _start; };
@@ -320,15 +320,14 @@ namespace ft
 
 			if (_size)
 			{
-				while (first != last)
+				// std::cout << "diff == " << diff << std::endl;
+				for (iterator it = first; it != last; it++)
 				{
-					_alloc.destroy(&(*first));
-					first++;
+					_alloc.destroy(&(*it));
 				}
-				while (first != this->end())
+				for (iterator it = first; it != this->end(); it++)
 				{
-					*first = *(first + diff);
-					first++;
+					*it = *(it + diff);
 				}
 				_size -= diff;
 			}
@@ -337,10 +336,23 @@ namespace ft
 
 		void swap(vector& x)
 		{
-			vector tmp = x;
+			if (x == *this)
+				return ;
 
-			x = *this;
-			*this = tmp;
+			pointer tmpstart = x._start;
+			size_type tmpsize = x.size();
+			size_type tmpcapacity = x.capacity();
+			allocator_type tmpalloc = x.get_allocator();
+
+			x._start = this->_start;
+			x._size = this->_size;
+			x._capacity = this->capacity();
+			x._alloc = this->_alloc;
+
+			this->_start = tmpstart;
+			this->_size = tmpsize;
+			this->_capacity = tmpcapacity;
+			this->_alloc = tmpalloc;
 		}
 
 		void clear()
