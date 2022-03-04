@@ -120,10 +120,6 @@ namespace ft
 
 		void        resize(size_type n, value_type val = value_type())
 		{
-			/*Resizes the container so that it contains n elements.
-			If n is smaller than the current container size, the content is reduced to its first n elements, removing those beyond (and destroying them).
-			If n is greater than the current container size, the content is expanded by inserting at the end as many elements as needed to reach a size of n. If val is specified, the new elements are initialized as copies of val, otherwise, they are value-initialized.
-			If n is also greater than the current container capacity, an automatic reallocation of the allocated storage space takes place.*/
 			if (n > _size)
 			{
 				while (_size < n)
@@ -145,11 +141,6 @@ namespace ft
 
 		bool        empty(void) const { return !_size; }
 
-  
-		/*Requests that the vector capacity be at least enough to contain n elements.
-		If n is greater than the current vector capacity, the function causes the container to reallocate its storage increasing its capacity to n (or greater).
-		In all other cases, the function call does not cause a reallocation and the vector capacity is not affected.
-		This function has no effect on the vector size and cannot alter its elements.*/ 
 		void        reserve(size_type n)
 		{
 			if (n > _capacity)
