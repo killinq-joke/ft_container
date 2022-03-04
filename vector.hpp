@@ -53,7 +53,7 @@ namespace ft
 			_start = _alloc.allocate(n);
 			for (difference_type i = 0; i < n; i++)
 			{
-				_alloc.construct(&_start[i], *first);
+				_alloc.construct(&_start[i], *(first++));
 			}
 		}
 		
@@ -67,7 +67,6 @@ namespace ft
 			this->clear();
 			_alloc = x.get_allocator();
 			this->insert(this->end(), x.begin(), x.end());
-			// show_vector();
 			return *this;
 		}
 
