@@ -530,6 +530,7 @@ public:
 	// map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
 	// : _tree(rbtree<value_type, key_compare>()), _comparator(comp), _alloc(alloc)
 	// {
+
 	// }
 
 	// map (const map& x)

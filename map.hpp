@@ -53,27 +53,29 @@ public:
     template <class InputIterator>
     map(InputIterator first, InputIterator last,
         const key_compare& comp = key_compare(),
-        const allocator_type& alloc = allocator_type())
+        const allocator_type& alloc = allocator_type()
+			typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = nullptr)) : _comp(comp), _alloc(alloc)
     {
     }
 
-    map(const map& x)
-    {
-    }
+    // map(const map& x)
+    // {
+    // }
 
     ~map()
     {
+		this->clear();
     }
 
-    iterator begin()
-    {
-        return _tree;
-    }
+	iterator begin()
+	{
+		
+	}
 
-    // const_iterator begin() const
-    // {
+	const_iterator begin() const
+	{
 
-    // }
+	}
 
     allocator_type get_allocator() const
     {
