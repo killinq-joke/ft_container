@@ -32,14 +32,182 @@ template <class Pair, class Compare = less<Pair> >
 class rbtree
 {
 public:
-typedef node<Pair>					Node;
-typedef Node*						NodePtr;
-typedef typename Pair::first_type	key_type;
-typedef typename Pair::second_type	value_type;
+	typedef node<Pair>					Node;
+	typedef Node*						NodePtr;
+	typedef typename Pair::first_type	key_type;
+	typedef typename Pair::second_type	value_type;
+	typedef Compare						key_compare;
+
+	rbtree() : comparator(Compare())
+	{
+		TNULL = new Node;
+		TNULL->color = BLACK;
+		TNULL->left = nullptr;
+		TNULL->right = nullptr;
+		root = TNULL;
+	}
+
+	void prefix()
+	{
+		prefix(this->root);
+	}
+
+	void infix()
+	{
+		infix(this->root);
+	}
+
+	void suffix()
+	{
+		suffix(this->root);
+	}
+
+	NodePtr search(value_type k)
+	{
+		return search(this->root, k);
+	}
+
+	NodePtr min(NodePtr node)
+	{
+		while (node->left != TNULL)
+			node = node->left;
+		return node;
+	}
+
+	NodePtr maximum(NodePtr node)
+	{
+		while (node->right != TNULL)
+			node = node->right;
+		return node;
+	}
+
+	NodePtr successor(NodePtr x)
+	{
+		if (x->right != TNULL)
+			return min(x->right);
+
+		NodePtr y = x->parent;
+		while (y != TNULL && x == y->right)
+		{
+			x = y;
+			y = y->parent;
+		}
+		return y;
+	}
+
+	NodePtr predecessor(NodePtr x)
+	{
+		if (x->left != TNULL)
+			return maximum(x->left);
+
+		NodePtr y = x->parent;
+		while (y != TNULL && x == y->left)
+		{
+			x = y;
+			y = y->parent;
+		}
+
+		return y;
+	}
+
+	void leftRotate(NodePtr x)
+	{
+		NodePtr y = x->right;
+
+		x->right = y->left;
+		if (y->left != TNULL)
+			y->left->parent = x;
+		y->parent = x->parent;
+		if (x->parent == nullptr)
+			this->root = y;
+		else if (x == x->parent->left)
+			x->parent->left = y;
+		else
+			x->parent->right = y;
+		y->left = x;
+		x->parent = y;
+	}
+
+	void rightRotate(NodePtr x)
+	{
+		NodePtr y = x->left;
+
+		x->left = y->right;
+		if (y->right != TNULL)
+			y->right->parent = x;
+		y->parent = x->parent;
+		if (x->parent == nullptr)
+			this->root = y;
+		else if (x == x->parent->right)
+			x->parent->right = y;
+		else
+			x->parent->left = y;
+		y->right = x;
+		x->parent = y;
+	}
+
+	void insert(Pair val)
+	{
+		NodePtr node = new Node;
+
+		node->parent = nullptr;
+		node->data = val;
+		node->left = TNULL;
+		node->right = TNULL;
+		node->color = RED;
+
+		NodePtr y = nullptr;
+		NodePtr x = this->root;
+
+		while (x != TNULL)
+		{
+			y = x;
+			if (comparator(node->data, x->data))
+				x = x->left;
+			else
+				x = x->right;
+		}
+
+		node->parent = y;
+		if (y == nullptr)
+			root = node;
+		else if (comparator(node->data, y->data))
+			y->left = node;
+		else
+			y->right = node;
+
+		if (node->parent == nullptr)
+		{
+			node->color = BLACK;
+			return;
+		}
+
+		if (node->parent->parent == nullptr)
+			return;
+
+		insertFix(node);
+	}
+
+	NodePtr getRoot()
+	{
+		return this->root;
+	}
+
+	void deleteNode(Pair data)
+	{
+		deleteNodeHelper(this->root, data);
+	}
+
+	void printTree()
+	{
+		if (root)
+			print(this->root, "", true);
+	}
 
 private:
 	NodePtr root;
 	NodePtr TNULL;
+	key_compare comparator;
 
 	void initializeNULLNode(NodePtr node, NodePtr parent)
 	{
@@ -85,7 +253,7 @@ private:
 		if (node == TNULL || key == node->data)
 			return node;
 
-		if (key < node->data)
+		if (comparator(key, node->data))
 			return search(node->left, key);
 
 		return search(node->right, key);
@@ -178,7 +346,7 @@ private:
 		v->parent = u->parent;
 	}
 
-	void deleteNodeHelper(NodePtr node, value_type val)
+	void deleteNodeHelper(NodePtr node, Pair val)
 	{
 		NodePtr z = TNULL;
 		NodePtr x, y;
@@ -188,7 +356,7 @@ private:
 			if (node->data == val)
 				z = node;
 
-			if (node->data <= val)
+			if (comparator(node->data, val))
 				node = node->right;
 			else
 				node = node->left;
@@ -317,172 +485,6 @@ private:
 		}
 	}
 
-public:
-	rbtree()
-	{
-		TNULL = new Node;
-		TNULL->color = BLACK;
-		TNULL->left = nullptr;
-		TNULL->right = nullptr;
-		root = TNULL;
-	}
-
-	void prefix()
-	{
-		prefix(this->root);
-	}
-
-	void infix()
-	{
-		infix(this->root);
-	}
-
-	void suffix()
-	{
-		suffix(this->root);
-	}
-
-	NodePtr search(value_type k)
-	{
-		return search(this->root, k);
-	}
-
-	NodePtr min(NodePtr node)
-	{
-		while (node->left != TNULL)
-			node = node->left;
-		return node;
-	}
-
-	NodePtr maximum(NodePtr node)
-	{
-		while (node->right != TNULL)
-			node = node->right;
-		return node;
-	}
-
-	NodePtr successor(NodePtr x)
-	{
-		if (x->right != TNULL)
-			return min(x->right);
-
-		NodePtr y = x->parent;
-		while (y != TNULL && x == y->right)
-		{
-			x = y;
-			y = y->parent;
-		}
-		return y;
-	}
-
-	NodePtr predecessor(NodePtr x)
-	{
-		if (x->left != TNULL)
-			return maximum(x->left);
-
-		NodePtr y = x->parent;
-		while (y != TNULL && x == y->left)
-		{
-			x = y;
-			y = y->parent;
-		}
-
-		return y;
-	}
-
-	void leftRotate(NodePtr x)
-	{
-		NodePtr y = x->right;
-
-		x->right = y->left;
-		if (y->left != TNULL)
-			y->left->parent = x;
-		y->parent = x->parent;
-		if (x->parent == nullptr)
-			this->root = y;
-		else if (x == x->parent->left)
-			x->parent->left = y;
-		else
-			x->parent->right = y;
-		y->left = x;
-		x->parent = y;
-	}
-
-	void rightRotate(NodePtr x)
-	{
-		NodePtr y = x->left;
-
-		x->left = y->right;
-		if (y->right != TNULL)
-			y->right->parent = x;
-		y->parent = x->parent;
-		if (x->parent == nullptr)
-			this->root = y;
-		else if (x == x->parent->right)
-			x->parent->right = y;
-		else
-			x->parent->left = y;
-		y->right = x;
-		x->parent = y;
-	}
-
-	void insert(Pair val)
-	{
-		NodePtr node = new Node;
-
-		node->parent = nullptr;
-		node->data = val;
-		node->left = TNULL;
-		node->right = TNULL;
-		node->color = RED;
-
-		NodePtr y = nullptr;
-		NodePtr x = this->root;
-
-		while (x != TNULL)
-		{
-			y = x;
-			if (node->data < x->data)
-				x = x->left;
-			else
-				x = x->right;
-		}
-
-		node->parent = y;
-		if (y == nullptr)
-			root = node;
-		else if (node->data < y->data)
-			y->left = node;
-		else
-			y->right = node;
-
-		if (node->parent == nullptr)
-		{
-			node->color = BLACK;
-			return;
-		}
-
-		if (node->parent->parent == nullptr)
-			return;
-
-		insertFix(node);
-	}
-
-	NodePtr getRoot()
-	{
-		return this->root;
-	}
-
-	void deleteNode(value_type data)
-	{
-		deleteNodeHelper(this->root, data);
-	}
-
-	void printTree()
-	{
-		if (root)
-			print(this->root, "", true);
-	}
 };
 
 template <class Key, class T, class Compare = less<Key>, class Alloc = std::allocator<pair<const Key,T> > >
