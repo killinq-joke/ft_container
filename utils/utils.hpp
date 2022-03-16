@@ -59,7 +59,7 @@ namespace ft
                 second(b)
             {}
 
-            pair& operator= (const pair& pr)
+            pair& operator=(const pair& pr)
             {
                 if (*this == pr)
                     return (*this);
@@ -67,6 +67,7 @@ namespace ft
                 this->second = pr.second;
                 return (*this);
             }
+
         };
     
     template <class T1, class T2>
@@ -110,7 +111,7 @@ namespace ft
     {
         return (ft::pair<T1, T2>(x, y));
     }
-    
+
     template<bool Cond, class T = void> struct enable_if {};
     template<class T> struct enable_if<true, T> { typedef T type; };
 

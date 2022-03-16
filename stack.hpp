@@ -1,3 +1,4 @@
+#pragma once
 #include "vector.hpp"
 
 namespace ft
@@ -14,7 +15,11 @@ public:
     
     explicit stack(const container_type& ctnr = container_type()) : _container(ctnr)
     {
+    }
 
+    stack& operator=(stack& x)
+    {
+        return x;
     }
 
     ~stack()
@@ -51,9 +56,50 @@ public:
         _container.pop_back();
     }
 
+    container_type  c() const
+    {
+        return _container;
+    }
+
 private:
     container_type  _container;
 
 };
+
+template <class T, class Container>
+bool operator==(const stack<T,Container>& lhs, const stack<T,Container>& rhs)
+{
+    return (lhs.c() == rhs.c());
+}
+
+template <class T, class Container>
+bool operator!=(const stack<T,Container>& lhs, const stack<T,Container>& rhs)
+{
+    return (lhs.c() != rhs.c());
+}
+
+template <class T, class Container>
+bool operator<(const stack<T,Container>& lhs, const stack<T,Container>& rhs)
+{
+    return (lhs.c() < rhs.c());
+}
+
+template <class T, class Container>
+bool operator<=(const stack<T,Container>& lhs, const stack<T,Container>& rhs)
+{
+    return (lhs.c() <= rhs.c());
+}
+
+template <class T, class Container>
+bool operator>(const stack<T,Container>& lhs, const stack<T,Container>& rhs)
+{
+    return (lhs.c() > rhs.c());
+}
+
+template <class T, class Container>
+bool operator>=(const stack<T,Container>& lhs, const stack<T,Container>& rhs)
+{
+    return (lhs.c() >= rhs.c());
+}
 
 };
