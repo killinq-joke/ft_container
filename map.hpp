@@ -53,8 +53,8 @@ public:
     template <class InputIterator>
     map(InputIterator first, InputIterator last,
         const key_compare& comp = key_compare(),
-        const allocator_type& alloc = allocator_type()
-			typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = nullptr)) : _comp(comp), _alloc(alloc)
+        const allocator_type& alloc = allocator_type(),
+			typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = nullptr) : _comp(comp), _alloc(alloc)
     {
     }
 
@@ -69,7 +69,7 @@ public:
 
 	iterator begin()
 	{
-		
+
 	}
 
 	const_iterator begin() const
@@ -86,7 +86,6 @@ private:
     rbtree<value_type, key_compare> 			_tree;
     key_compare     							_comp;
     allocator_type  							_alloc;
-
-}
+};
 
 };
