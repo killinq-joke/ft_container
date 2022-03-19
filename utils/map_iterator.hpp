@@ -616,7 +616,6 @@ public:
 		return (ret);
 	}
 
-
 private:
 	linkPtr _ptr;
 };
