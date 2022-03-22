@@ -112,6 +112,13 @@ namespace ft
         return (ft::pair<T1, T2>(x, y));
     }
 
+	template <typename T1, typename T2>
+	std::ostream& operator<<(std::ostream& os, const pair<T1, T2> p)
+	{
+		os << "key == " << p.first << " value == " << p.second;
+		return os;
+	}
+
     template<bool Cond, class T = void> struct enable_if {};
     template<class T> struct enable_if<true, T> { typedef T type; };
 
@@ -454,5 +461,34 @@ namespace ft
             }
             return (first2 != last2);
         }
+
+	enum	colors
+	{
+		BLACK,
+		RED
+	};
+
+	template <class Pair>
+	class node {
+
+	public:
+		node(Pair& val) : data(val), parent(nullptr), left(nullptr), right(nullptr), color(BLACK)
+		{
+		}
+
+		node(void) : parent(nullptr), left(nullptr), right(nullptr), color(BLACK)
+		{
+		}
+
+		~node()
+		{};
+
+		Pair	data;
+		node	*parent;
+		node	*left;
+		node	*right;
+		colors	color;
+		bool	isnull;
+	};
 
 } 

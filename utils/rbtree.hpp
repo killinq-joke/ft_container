@@ -1,34 +1,12 @@
 #pragma once
 #include <memory>
-#include "utils/utils.hpp"
+#include "utils.hpp"
+#include "map_iterator.hpp"
 
 namespace ft
 {
 
-template <typename T1, typename T2>
-std::ostream& operator<<(std::ostream& os, const pair<T1, T2> p)
-{
-    os << "key == " << p.first << " value == " << p.second;
-    return os;
-}
-
-enum	colors
-{
-	BLACK,
-	RED
-};
-
-template <class Pair>
-struct node {
-  Pair data;
-  node *parent;
-  node *left;
-  node *right;
-  colors color;
-};
-
-
-template <class Pair, class Compare = less<Pair> >
+template <class Pair, class Compare = less<Pair>, class Alloc = std::allocator<node<Pair> > >
 class rbtree
 {
 public:
@@ -37,14 +15,44 @@ public:
 	typedef typename Pair::first_type	key_type;
 	typedef typename Pair::second_type	value_type;
 	typedef Compare						key_compare;
+	typedef size_t						size_type;
+	typedef Alloc						allocator_type;
 
-	rbtree() : comparator(Compare())
+	rbtree() : comparator(Compare()), _size(0), _alloc(allocator_type())
 	{
-		TNULL = new Node;
+		TNULL = this->createNode();
 		TNULL->color = BLACK;
 		TNULL->left = nullptr;
 		TNULL->right = nullptr;
 		root = TNULL;
+	}
+
+	NodePtr createNode(Pair val)
+	{
+		Node* newNode = _alloc.allocate(1);
+
+		_alloc.construct(newNode, val);
+		return (newNode);
+	}
+
+	NodePtr createNode(void)
+	{
+		Node* newNode = _alloc.allocate(1);
+		Pair val;
+
+		_alloc.construct(newNode, val);
+		return (newNode);
+	}
+
+	~rbtree()
+	{
+		deleteAll(this->root);
+		delete TNULL;
+	}
+
+	size_type size()
+	{
+		return this->_size;
 	}
 
 	void prefix()
@@ -74,7 +82,7 @@ public:
 		return node;
 	}
 
-	NodePtr maximum(NodePtr node)
+	NodePtr max(NodePtr node)
 	{
 		while (node->right != TNULL)
 			node = node->right;
@@ -98,7 +106,7 @@ public:
 	NodePtr predecessor(NodePtr x)
 	{
 		if (x->left != TNULL)
-			return maximum(x->left);
+			return max(x->left);
 
 		NodePtr y = x->parent;
 		while (y != TNULL && x == y->left)
@@ -186,6 +194,7 @@ public:
 			return;
 
 		insertFix(node);
+		_size++;
 	}
 
 	NodePtr getRoot()
@@ -205,9 +214,11 @@ public:
 	}
 
 private:
-	NodePtr root;
-	NodePtr TNULL;
-	key_compare comparator;
+	NodePtr			root;
+	NodePtr			TNULL;
+	key_compare 	comparator;
+	size_type		_size;
+	allocator_type _alloc;
 
 	void initializeNULLNode(NodePtr node, NodePtr parent)
 	{
@@ -238,13 +249,14 @@ private:
 		}
 	}
 
-	void suffix(NodePtr node)
+	void deleteAll(NodePtr node)
 	{
 		if (node != TNULL)
 		{
-			suffix(node->left);
-			suffix(node->right);
-			std::cout << node->data << " ";
+			deleteAll(node->left);
+			deleteAll(node->right);
+			_alloc.destroy(node);
+			_alloc.deallocate(node, 1);
 		}
 	}
 
@@ -404,6 +416,7 @@ private:
 		delete z;
 		if (y_original_color == BLACK)
 			deleteFix(x);
+		_size--;
 	}
 
 	void insertFix(NodePtr k)
@@ -486,86 +499,5 @@ private:
 	}
 
 };
-
-template <class Key, class T, class Compare = less<Key>, class Alloc = std::allocator<pair<const Key,T> > >
-class map
-{
-public:
-	typedef Compare											key_compare;
-	typedef Key												key_type;
-	typedef T												mapped_type;
-	typedef pair<const key_type, mapped_type>				value_type;
-	typedef	Alloc											allocator_type;
-	typedef	typename allocator_type::reference				reference;
-	typedef typename allocator_type::const_reference		const_reference;
-	typedef typename allocator_type::pointer 				pointer;
-	typedef typename allocator_type::const_pointer			const_pointer;
-	typedef ft::bidirectional_iterator<value_type> 		iterator;
-	typedef ft::bidirectional_iterator<const value_type>	const_iterator;
-	typedef reverse_iterator<iterator>						reverse_iterator;
-	// typedef reverse_iterator<const_iterator>				const_reverse_iterator;
-	typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
-	typedef size_t											size_type;
-	typedef rbtree<value_type, key_compare>					tree_type;
-
-	class value_compare : std::binary_function<value_type, value_type, bool>
-	{
-		friend class map<key_type, mapped_type, key_compare, Alloc>;
-		
-		protected:
-			Compare comp;
-			value_compare (Compare c) : comp(c) {}
-		
-		public:
-			bool operator() (const value_type& x, const value_type& y) const
-			{ return (comp(x.first, y.first)); }
-	};
-
-	explicit map(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
-	: _tree(rbtree<value_type, key_compare>()), _comparator(comp), _alloc(alloc)
-	{
-	}
-
-	// template <class InputIterator>
-	// map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
-	// : _tree(rbtree<value_type, key_compare>()), _comparator(comp), _alloc(alloc)
-	// {
-
-	// }
-
-	// map (const map& x)
-	// {
-	// }
-
-	~map()
-	{
-	}
-
-	// pair<iterator,bool> insert(const value_type& val)
-	// {
-		
-	// 	while (_comparator(val.first, ))
-	// 	{
-
-	// 	}
-	// 	return ();
-	// }
-
-	// iterator insert(iterator position, const value_type& val)
-	// {
-
-	// }
-
-	// template <class InputIterator>
-	// void insert(InputIterator first, InputIterator last)
-	// {
-
-	// }
-
-	tree_type		_tree;
-	allocator_type	_alloc;
-	key_compare		_comparator;
-};
-
 
 }

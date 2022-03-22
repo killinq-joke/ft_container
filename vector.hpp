@@ -28,10 +28,10 @@ namespace ft
 		typedef typename ft::iterator_traits<iterator>::difference_type		difference_type; 
 		typedef typename allocator_type::size_type          				size_type;
 		
-		explicit vector (const allocator_type& alloc = allocator_type()) : _alloc(alloc), _start(nullptr), _size(0), _capacity(0)
+		explicit vector(const allocator_type& alloc = allocator_type()) : _alloc(alloc), _start(nullptr), _size(0), _capacity(0)
 		{}
 
-		explicit vector (size_type n, const value_type& val = value_type(),
+		explicit vector(size_type n, const value_type& val = value_type(),
 				const allocator_type& alloc = allocator_type()) : _alloc(alloc), _size(n), _capacity(n)
 		{
 			_start = _alloc.allocate(n);
