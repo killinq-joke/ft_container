@@ -6,41 +6,41 @@
 namespace ft
 {
 
-template <class Pair, class Compare = less<Pair>, class Alloc = std::allocator<node<Pair> > >
+template <class Pair, class Node = node<Pair>, class Compare = less<Pair>, class Alloc = std::allocator<Node> >
 class rbtree
 {
 public:
-	typedef node<Pair>					Node;
-	typedef Node*						NodePtr;
-	typedef typename Pair::first_type	key_type;
-	typedef typename Pair::second_type	value_type;
-	typedef Compare						key_compare;
-	typedef size_t						size_type;
-	typedef Alloc						allocator_type;
+	typedef typename Pair::first_type			key_type;
+	typedef typename Pair::second_type			value_type;
+	typedef Compare								key_compare;
+	typedef size_t								size_type;
+	typedef Alloc								allocator_type;
+	typedef Node*								NodePtr;
 
 	rbtree() : comparator(Compare()), _size(0), _alloc(allocator_type())
 	{
-		TNULL = this->createNode();
+		TNULL = _alloc.allocate(1);
+		_alloc.construct(TNULL, Node());
 		TNULL->color = BLACK;
-		TNULL->left = nullptr;
-		TNULL->right = nullptr;
+		TNULL->isnull = true;
+		TNULL->left = TNULL;
+		TNULL->right = TNULL;
+		TNULL->parent = TNULL;
 		root = TNULL;
-	}
-
-	NodePtr createNode(Pair val)
-	{
-		Node* newNode = _alloc.allocate(1);
-
-		_alloc.construct(newNode, val);
-		return (newNode);
+		REND = this->createNode();
+		REND->isnull = true;
+		TNULL->left = REND;
 	}
 
 	NodePtr createNode(void)
 	{
-		Node* newNode = _alloc.allocate(1);
-		Pair val;
+		NodePtr newNode = _alloc.allocate(1);
 
-		_alloc.construct(newNode, val);
+		_alloc.construct(newNode, Node());
+		newNode->color = BLACK;
+		newNode->left = TNULL;
+		newNode->right = TNULL;
+		newNode->parent = newNode;
 		return (newNode);
 	}
 
@@ -77,25 +77,28 @@ public:
 
 	NodePtr min(NodePtr node)
 	{
-		while (node->left != TNULL)
+		while (!node->left->isnull)
 			node = node->left;
 		return node;
 	}
 
 	NodePtr max(NodePtr node)
 	{
-		while (node->right != TNULL)
+		while (!node->right->isnull)
+		{
 			node = node->right;
+			std::cout << node->data << std::endl;
+		}
 		return node;
 	}
 
 	NodePtr successor(NodePtr x)
 	{
-		if (x->right != TNULL)
+		if (!x->right->isnull)
 			return min(x->right);
 
 		NodePtr y = x->parent;
-		while (y != TNULL && x == y->right)
+		while (!y->isnull && x == y->right)
 		{
 			x = y;
 			y = y->parent;
@@ -105,11 +108,11 @@ public:
 
 	NodePtr predecessor(NodePtr x)
 	{
-		if (x->left != TNULL)
+		if (!x->left->isnull)
 			return max(x->left);
 
 		NodePtr y = x->parent;
-		while (y != TNULL && x == y->left)
+		while (!y->isnull && x == y->left)
 		{
 			x = y;
 			y = y->parent;
@@ -123,10 +126,10 @@ public:
 		NodePtr y = x->right;
 
 		x->right = y->left;
-		if (y->left != TNULL)
+		if (!y->left->isnull)
 			y->left->parent = x;
 		y->parent = x->parent;
-		if (x->parent == nullptr)
+		if (x->parent->isnull)
 			this->root = y;
 		else if (x == x->parent->left)
 			x->parent->left = y;
@@ -141,10 +144,10 @@ public:
 		NodePtr y = x->left;
 
 		x->left = y->right;
-		if (y->right != TNULL)
+		if (!y->left->isnull)
 			y->right->parent = x;
 		y->parent = x->parent;
-		if (x->parent == nullptr)
+		if (x->parent == TNULL)
 			this->root = y;
 		else if (x == x->parent->right)
 			x->parent->right = y;
@@ -156,18 +159,15 @@ public:
 
 	void insert(Pair val)
 	{
-		NodePtr node = new Node;
+		NodePtr node = this->createNode();
 
-		node->parent = nullptr;
-		node->data = val;
-		node->left = TNULL;
-		node->right = TNULL;
 		node->color = RED;
+		node->data = val;
 
-		NodePtr y = nullptr;
+		NodePtr y = TNULL;
 		NodePtr x = this->root;
 
-		while (x != TNULL)
+		while (!x->isnull)
 		{
 			y = x;
 			if (comparator(node->data, x->data))
@@ -177,24 +177,58 @@ public:
 		}
 
 		node->parent = y;
-		if (y == nullptr)
+		if (y->isnull)
 			root = node;
 		else if (comparator(node->data, y->data))
 			y->left = node;
 		else
 			y->right = node;
 
-		if (node->parent == nullptr)
+		if (node->parent->isnull)
 		{
 			node->color = BLACK;
+			TNULL->parent = this->max(this->root);
+  std::cout << "salut" << std::endl;
+			this->min(this->root)->left = REND;
+			REND->parent = this->min(this->root);
+			_size++;
 			return;
 		}
 
-		if (node->parent->parent == nullptr)
+		if (node->parent->parent->isnull)
+		{
+			TNULL->parent = this->max(this->root);
+			this->min(this->root)->left = REND;
+			REND->parent = this->min(this->root);
+			_size++;
 			return;
+		}
 
 		insertFix(node);
+		TNULL->parent = this->max(this->root);
+		this->min(this->root)->left = REND;
+		REND->parent = this->min(this->root);
 		_size++;
+	}
+
+	NodePtr	end()
+	{
+		return (TNULL);
+	}
+
+	NodePtr	begin()
+	{
+		return (this->min(this->root));
+	}
+
+	NodePtr	rbegin()
+	{
+		return (this->max(this->root));
+	}
+
+	NodePtr	rend()
+	{
+		return (REND);
 	}
 
 	NodePtr getRoot()
@@ -216,9 +250,10 @@ public:
 private:
 	NodePtr			root;
 	NodePtr			TNULL;
+	NodePtr			REND;
 	key_compare 	comparator;
 	size_type		_size;
-	allocator_type _alloc;
+	allocator_type	_alloc;
 
 	void initializeNULLNode(NodePtr node, NodePtr parent)
 	{
@@ -231,7 +266,7 @@ private:
 
 	void prefix(NodePtr node)
 	{
-		if (node != TNULL)
+		if (!node->isnull)
 		{
 			std::cout << node->data << " ";
 			prefix(node->left);
@@ -241,7 +276,7 @@ private:
 
 	void infix(NodePtr node)
 	{
-		if (node != TNULL)
+		if (!node->isnull)
 		{
 			infix(node->left);
 			std::cout << node->data << " ";
@@ -251,7 +286,7 @@ private:
 
 	void deleteAll(NodePtr node)
 	{
-		if (node != TNULL)
+		if (!node->isnull)
 		{
 			deleteAll(node->left);
 			deleteAll(node->right);
@@ -262,7 +297,7 @@ private:
 
 	NodePtr search(NodePtr node, key_type key)
 	{
-		if (node == TNULL || key == node->data)
+		if (node->isnull || key == node->data)
 			return node;
 
 		if (comparator(key, node->data))
@@ -348,7 +383,7 @@ private:
 
 	void swap(NodePtr u, NodePtr v)
 	{
-		if (u->parent == nullptr)
+		if (u->parent->isnull)
 			root = v;
 		else if (u == u->parent->left)
 			u->parent->left = v;
@@ -363,7 +398,7 @@ private:
 		NodePtr z = TNULL;
 		NodePtr x, y;
 
-		while (node != TNULL)
+		while (!node->isnull)
 		{
 			if (node->data == val)
 				z = node;
@@ -374,7 +409,7 @@ private:
 				node = node->left;
 		}
 
-		if (z == TNULL)
+		if (z->isnull)
 		{
 			std::cout << "Key not found in the tree" << std::endl;
 			return;
@@ -382,12 +417,12 @@ private:
 
 		y = z;
 		colors y_original_color = y->color;
-		if (z->left == TNULL)
+		if (z->left->isnull)
 		{
 			x = z->right;
 			swap(z, z->right);
 		}
-		else if (z->right == TNULL)
+		else if (z->right->isnull)
 		{
 			x = z->left;
 			swap(z, z->left);
@@ -477,7 +512,7 @@ private:
 	}
 
 	void print(NodePtr root, std::string indent, bool last) {
-		if (root != TNULL)
+		if (!root->isnull)
 		{
 			std::cout << indent;
 			if (last)

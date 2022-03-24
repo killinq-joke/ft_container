@@ -472,16 +472,12 @@ namespace ft
 	class node {
 
 	public:
-		node(Pair& val) : data(val), parent(nullptr), left(nullptr), right(nullptr), color(BLACK)
-		{
-		}
-
-		node(void) : parent(nullptr), left(nullptr), right(nullptr), color(BLACK)
+		node() : isnull(false)
 		{
 		}
 
 		~node()
-		{};
+		{}
 
 		Pair	data;
 		node	*parent;
