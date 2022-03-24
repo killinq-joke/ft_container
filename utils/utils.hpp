@@ -485,6 +485,7 @@ namespace ft
 		node	*right;
 		colors	color;
 		bool	isnull;
+		bool	isrend;
 	};
 
 } 

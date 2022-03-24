@@ -559,9 +559,10 @@ public:
 
 	self& operator--(void)
 	{
-		if (!_ptr->left)
+		if (!_ptr->left || _ptr->left->isrend)
 		{
-			_ptr = _ptr->parent;
+			_ptr = _ptr->left;
+			return *this;
 		}
 		else if (!_ptr->left->isnull)
 		{

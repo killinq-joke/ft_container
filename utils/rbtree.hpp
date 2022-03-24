@@ -29,6 +29,8 @@ public:
 		root = TNULL;
 		REND = this->createNode();
 		REND->isnull = true;
+		REND->isrend = true;
+		REND->left = nullptr;
 		TNULL->left = REND;
 	}
 
@@ -41,6 +43,7 @@ public:
 		newNode->left = TNULL;
 		newNode->right = TNULL;
 		newNode->parent = newNode;
+		newNode->isrend = false;
 		return (newNode);
 	}
 
@@ -85,10 +88,7 @@ public:
 	NodePtr max(NodePtr node)
 	{
 		while (!node->right->isnull)
-		{
 			node = node->right;
-			std::cout << node->data << std::endl;
-		}
 		return node;
 	}
 
@@ -433,9 +433,7 @@ private:
 			y_original_color = y->color;
 			x = y->right;
 			if (y->parent == z)
-			{
 				x->parent = y;
-			}
 			else
 			{
 				swap(y, y->right);
