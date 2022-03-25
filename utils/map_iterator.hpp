@@ -528,8 +528,11 @@ public:
 
 	self& operator++(void)
 	{
-		if (_ptr->isnull)
+		if (_ptr->isnull && !_ptr->isrend)
+		{
+			_ptr = _ptr->parent;
 			return *this;
+		}
 		if (!_ptr->right->isnull)
 		{
 			_ptr = _ptr->right;

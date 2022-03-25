@@ -188,7 +188,6 @@ public:
 		{
 			node->color = BLACK;
 			TNULL->parent = this->max(this->root);
-  std::cout << "salut" << std::endl;
 			this->min(this->root)->left = REND;
 			REND->parent = this->min(this->root);
 			_size++;
