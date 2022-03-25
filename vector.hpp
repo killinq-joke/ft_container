@@ -85,7 +85,6 @@ namespace ft
 			std::cout << "[";
 			for (size_t i = 0; i < this->size(); i++)
 			{
-				// std::cout << "it == " << it << std::endl;
 				std::cout <<  _start[i] << ", ";
 			}
 			std::cout << "]" << std::endl;
@@ -185,7 +184,6 @@ namespace ft
 				this->push_back(*first);
 				first++;
 			}
-			// std::cerr << "capacity == " << capacity() << std::endl;
 		}
 		
 		void assign(size_type n, const value_type& val)
@@ -310,7 +308,6 @@ namespace ft
 
 			if (_size)
 			{
-				// std::cout << "diff == " << diff << std::endl;
 				for (iterator it = first; it != last; it++)
 				{
 					_alloc.destroy(&(*it));

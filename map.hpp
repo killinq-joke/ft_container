@@ -1,5 +1,6 @@
 #pragma once
 #include "vector.hpp"
+#include "./utils/map_iterator.hpp"
 #include "./utils/rbtree.hpp"
 
 namespace ft
@@ -124,21 +125,46 @@ public:
 		return (*((this->insert(make_pair(k,mapped_type()))).first)).second;
 	}
 
-	// pair<iterator,bool> insert(const value_type& val)
-	// {
-	// }
+	pair<iterator,bool> insert(const value_type& val)
+	{
+		node_type searched = _tree.search(val.first);
 
-	// iterator insert(iterator position, const value_type& val)
-	// {
+		if (searched->isnull)
+			return make_pair(iterator(_tree.insert(val)), true);
+		else
+			return make_pair(iterator(searched), false);
+	}
 
-	// }
+	iterator insert(iterator position, const value_type& val)
+	{
+		while (1)
+		{
+			if (*position->isnull)
+			{
+				return _tree.insert(*position, val);
+			}
+			else if (*position->first == val.first)
+				return position;
+			else if (_comparator(*position))
+				position++;
+			else
+				position--;
+		}
+	}
 
-	// template <class InputIterator>
-	// void insert(InputIterator first, InputIterator last)
-	// {
+	template <class InputIterator>
+	void insert(InputIterator first, InputIterator last, 
+	typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = nullptr)
+	{
+		while (first != last)
+		{
+			_tree.insert(make_pair(*first->first, *first->second));
+			first++;
+		}
+	}
 
-	// }
-
+private:
+	typedef typename tree_type::NodePtr node_type;
 	tree_type		_tree;
 	allocator_type	_alloc;
 	key_compare		_comparator;

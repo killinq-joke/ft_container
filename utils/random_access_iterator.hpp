@@ -1,16 +1,9 @@
 #pragma once
-
 #include "utils.hpp"
 
 namespace ft
 {
     
-    /*
-    ** @brief Random-access iterators allow to access elements at an
-    ** arbitrary offset position relative to the element they point
-    ** to. This is the most complete iterators. All pointer types
-    ** are also valid random-access-iterators.
-    */
     template <typename T>
         class random_access_iterator : ft::iterator<ft::random_access_iterator_tag, T>
         {
@@ -221,7 +214,7 @@ namespace ft
     }
 
     template <typename T>
-    std::ostream& operator<< (std::ostream& out, const ft::random_access_iterator<T>& rai)
+    std::ostream& operator<<(std::ostream& out, const ft::random_access_iterator<T>& rai)
     {
         out << rai.base();
         return out;

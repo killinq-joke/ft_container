@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
 #include "utils.hpp"
-#include "map_iterator.hpp"
 
 namespace ft
 {
@@ -73,7 +72,7 @@ public:
 		suffix(this->root);
 	}
 
-	NodePtr search(value_type k)
+	NodePtr search(key_type k)
 	{
 		return search(this->root, k);
 	}
@@ -157,7 +156,7 @@ public:
 		x->parent = y;
 	}
 
-	void insert(Pair val)
+	NodePtr insert(NodePtr begin, Pair val)
 	{
 		NodePtr node = this->createNode();
 
@@ -165,7 +164,7 @@ public:
 		node->data = val;
 
 		NodePtr y = TNULL;
-		NodePtr x = this->root;
+		NodePtr x = begin;
 
 		while (!x->isnull)
 		{
@@ -191,7 +190,7 @@ public:
 			this->min(this->root)->left = REND;
 			REND->parent = this->min(this->root);
 			_size++;
-			return;
+			return node;
 		}
 
 		if (node->parent->parent->isnull)
@@ -200,7 +199,7 @@ public:
 			this->min(this->root)->left = REND;
 			REND->parent = this->min(this->root);
 			_size++;
-			return;
+			return node;
 		}
 
 		insertFix(node);
@@ -208,6 +207,7 @@ public:
 		this->min(this->root)->left = REND;
 		REND->parent = this->min(this->root);
 		_size++;
+		return node;
 	}
 
 	NodePtr	end()
@@ -253,15 +253,6 @@ private:
 	key_compare 	comparator;
 	size_type		_size;
 	allocator_type	_alloc;
-
-	void initializeNULLNode(NodePtr node, NodePtr parent)
-	{
-		node->data = 0;
-		node->parent = parent;
-		node->left = nullptr;
-		node->right = nullptr;
-		node->color = BLACK;
-	}
 
 	void prefix(NodePtr node)
 	{
