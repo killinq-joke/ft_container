@@ -19,13 +19,14 @@ public:
 	typedef typename allocator_type::const_reference		const_reference;
 	typedef typename allocator_type::pointer 				pointer;
 	typedef typename allocator_type::const_pointer			const_pointer;
-	typedef ft::bidirectional_iterator<value_type> 			iterator;
-	typedef ft::bidirectional_iterator<const value_type>	const_iterator;
+	typedef ft::binaryiterator<value_type> 			iterator;
+	typedef ft::binaryiterator<const value_type>	const_iterator;
 	typedef reverse_iterator<iterator>						reverse_iterator;
 	// typedef reverse_iterator<const_iterator>				const_reverse_iterator;
 	typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
 	typedef size_t											size_type;
 	typedef rbtree<value_type, key_compare>					tree_type;
+	typedef typename tree_type::NodePtr						node_type;
 
 	class value_compare : std::binary_function<value_type, value_type, bool>
 	{
@@ -41,21 +42,20 @@ public:
 	};
 
 	explicit map(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
-	: _tree(rbtree<value_type, key_compare>()), _comparator(comp), _alloc(alloc)
+	: _tree(rbtree<value_type, key_compare>()), _comparator(comp), _alloc(alloc), _size(0)
 	{
-		_tree();
 	}
 
 	template <class InputIterator>
 	map(InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type(),
 			typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = nullptr)
-	: _tree(), _comparator(comp), _alloc(alloc)
+	: _tree(rbtree<value_type, key_compare>()), _comparator(comp), _alloc(alloc), _size(ft::distance(first, last))
 	{
 		this->insert(first, last);
 	}
 
 	map(const map& x)
-	: _tree(), _comparator(x._comparator), _alloc(x._alloc)
+	: _tree(), _comparator(x._comparator), _alloc(x._alloc), _size(x.size())
 	{
 		*this = x;
 	}
@@ -130,7 +130,7 @@ public:
 		node_type searched = _tree.search(val.first);
 
 		if (searched->isnull)
-			return make_pair(iterator(_tree.insert(val)), true);
+			return make_pair(iterator(_tree.insert(_tree.getRoot(), val)), true);
 		else
 			return make_pair(iterator(searched), false);
 	}
@@ -140,9 +140,7 @@ public:
 		while (1)
 		{
 			if (*position->isnull)
-			{
 				return _tree.insert(*position, val);
-			}
 			else if (*position->first == val.first)
 				return position;
 			else if (_comparator(*position))
@@ -163,11 +161,36 @@ public:
 		}
 	}
 
+	void erase(iterator position)
+	{
+		if (!*position->isnull)
+			_tree.deleteNode(*position->data);
+	}
+
+	size_type erase(const key_type& k)
+	{
+		if (_tree.search(k)->isnull)
+			return (0);
+		_tree.deleteNode(k);
+		return (1);
+	}
+
+	void erase(iterator first, iterator last)
+	{
+
+	}
+
+	void	clear(void)
+	{
+		_tree.deleteAll(_tree.getRoot());
+		_size = 0;
+	}
+
 private:
-	typedef typename tree_type::NodePtr node_type;
 	tree_type		_tree;
 	allocator_type	_alloc;
 	key_compare		_comparator;
+	size_type		_size;
 };
 
 

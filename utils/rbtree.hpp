@@ -5,7 +5,7 @@
 namespace ft
 {
 
-template <class Pair, class Node = node<Pair>, class Compare = less<Pair>, class Alloc = std::allocator<Node> >
+template <class Pair, class Compare = less<Pair>, class Node = node<Pair>, class Alloc = std::allocator<Node> >
 class rbtree
 {
 public:
@@ -161,7 +161,7 @@ public:
 		NodePtr node = this->createNode();
 
 		node->color = RED;
-		node->data = val;
+		node->data = Pair(val);
 
 		NodePtr y = TNULL;
 		NodePtr x = begin;
@@ -169,7 +169,7 @@ public:
 		while (!x->isnull)
 		{
 			y = x;
-			if (comparator(node->data, x->data))
+			if (comparator(node->data.first, x->data.first))
 				x = x->left;
 			else
 				x = x->right;
@@ -178,7 +178,7 @@ public:
 		node->parent = y;
 		if (y->isnull)
 			root = node;
-		else if (comparator(node->data, y->data))
+		else if (comparator(node->data.first, y->data.first))
 			y->left = node;
 		else
 			y->right = node;
@@ -237,7 +237,7 @@ public:
 
 	void deleteNode(Pair data)
 	{
-		deleteNodeHelper(this->root, data);
+		deleteNodeHelper(this->root, data->first);
 	}
 
 	void printTree()
@@ -245,6 +245,18 @@ public:
 		if (root)
 			print(this->root, "", true);
 	}
+
+	void deleteAll(NodePtr node)
+	{
+		if (!node->isnull)
+		{
+			deleteAll(node->left);
+			deleteAll(node->right);
+			_alloc.destroy(node);
+			_alloc.deallocate(node, 1);
+		}
+	}
+
 
 private:
 	NodePtr			root;
@@ -274,23 +286,12 @@ private:
 		}
 	}
 
-	void deleteAll(NodePtr node)
-	{
-		if (!node->isnull)
-		{
-			deleteAll(node->left);
-			deleteAll(node->right);
-			_alloc.destroy(node);
-			_alloc.deallocate(node, 1);
-		}
-	}
-
 	NodePtr search(NodePtr node, key_type key)
 	{
-		if (node->isnull || key == node->data)
+		if (node->isnull || key == node->data.first)
 			return node;
 
-		if (comparator(key, node->data))
+		if (comparator(key, node->data.first))
 			return search(node->left, key);
 
 		return search(node->right, key);
@@ -383,17 +384,17 @@ private:
 		v->parent = u->parent;
 	}
 
-	void deleteNodeHelper(NodePtr node, Pair val)
+	void deleteNodeHelper(NodePtr node, key_type k)
 	{
 		NodePtr z = TNULL;
 		NodePtr x, y;
 
 		while (!node->isnull)
 		{
-			if (node->data == val)
+			if (node->data->first == k)
 				z = node;
 
-			if (comparator(node->data, val))
+			if (comparator(node->data->first, k))
 				node = node->right;
 			else
 				node = node->left;

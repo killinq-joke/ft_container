@@ -30,6 +30,12 @@ namespace ft
             bool operator() (const T& x, const T& y) const { return (x < y); }
         };
 
+	template <typename T>
+	T& remove_const(const T& value)
+	{
+		return const_cast<T&>(value);
+	}
+
     template <class T1, class T2>
         struct pair
         {
@@ -63,7 +69,7 @@ namespace ft
             {
                 if (*this == pr)
                     return (*this);
-                this->first = pr.first;
+                remove_const(this->first) = pr.first;
                 this->second = pr.second;
                 return (*this);
             }
@@ -221,6 +227,7 @@ namespace ft
 
     template <class Iterator> struct iterator_traits
     {
+	public:
         typedef typename Iterator::difference_type       difference_type;
         typedef typename Iterator::value_type            value_type;
         typedef typename Iterator::pointer               pointer;
