@@ -79,20 +79,20 @@ public:
 		return iterator(_tree.min(_tree.getRoot()));
 	}
 
-	const_iterator begin() const
-	{
-		return const_iterator(_tree.min(_tree.getRoot()));
-	}
+	// const_iterator begin() const
+	// {
+	// 	return const_iterator(_tree.min(_tree.getRoot()));
+	// }
 
 	iterator end()
 	{
 		return iterator(_tree.max(_tree.getRoot())->right);
 	}
 
-	const_iterator end() const
-	{
-		return const_iterator(_tree.max(_tree.getRoot())->right);
-	}
+	// const_iterator end() const
+	// {
+	// 	return const_iterator(_tree.max(_tree.getRoot())->right);
+	// }
 
 	reverse_iterator rbegin()
 	{
@@ -107,7 +107,7 @@ public:
 
 	bool empty() const
 	{
-		return !_tree.size();
+		return !(_tree.size());
 	}
 
 	size_type size() const
@@ -122,7 +122,7 @@ public:
 
 	mapped_type& operator[](const key_type& k)
 	{
-		return (*((this->insert(make_pair(k,mapped_type()))).first)).second;
+		return (*((this->insert(ft::make_pair(k,mapped_type()))).first)).second;
 	}
 
 	pair<iterator,bool> insert(const value_type& val)
@@ -156,7 +156,7 @@ public:
 	{
 		while (first != last)
 		{
-			_tree.insert(make_pair(*first->first, *first->second));
+			this->insert(*first);
 			first++;
 		}
 	}
@@ -184,9 +184,7 @@ public:
 			tmp = first;
 			first++;
 			if (!_tree.search((*tmp).first)->isnull)
-			{
 				_tree.deleteNode(*tmp);
-			}
 		}
 	}
 

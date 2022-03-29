@@ -1,5 +1,6 @@
-containers_test
+containers_test/*
 .vscode
 a.out
 btree.cpp
 *test*
+*.txt

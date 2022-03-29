@@ -17,36 +17,42 @@ public:
     {
     }
 
-    stack& operator=(stack& x)
+	stack(const stack& other)
+	{
+		*this = other;
+	}
+
+    stack& operator=(const stack& other)
     {
-        return x;
+		this->_container = other.c();
+        return *this;
     }
 
     ~stack()
     {
     }
 
-    bool empty() const
+    bool	empty() const
     {
         return _container.empty();
     }
 
-    size_type size() const
+    size_type	size() const
     {
         return _container.size();
     }
 
-    value_type& top()
+    value_type&	top()
     {
         return _container.back();
     }
 
-    const value_type& top() const
+    const	value_type& top() const
     {
         return _container.back();
     }
 
-    void push(const value_type& val)
+    void	push(const value_type& val)
     {
         _container.push_back(val);
     }

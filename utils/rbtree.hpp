@@ -53,7 +53,7 @@ public:
 		delete REND;
 	}
 
-	size_type size()
+	size_type size() const
 	{
 		return this->_size;
 	}
@@ -78,14 +78,14 @@ public:
 		return search(this->root, k);
 	}
 
-	NodePtr min(NodePtr node)
+	NodePtr min(NodePtr node) const
 	{
 		while (!node->left->isnull)
 			node = node->left;
 		return node;
 	}
 
-	NodePtr max(NodePtr node)
+	NodePtr max(NodePtr node) const
 	{
 		while (!node->right->isnull)
 			node = node->right;
@@ -231,7 +231,7 @@ public:
 		return (REND);
 	}
 
-	NodePtr getRoot()
+	NodePtr getRoot() const
 	{
 		return this->root;
 	}
