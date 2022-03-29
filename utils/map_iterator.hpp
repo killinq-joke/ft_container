@@ -55,6 +55,11 @@ public:
 
 	self& operator++(void)
 	{
+		if ((_ptr == _ptr->parent->right || _ptr->parent->isnull) && _ptr->right->isnull)
+		{
+			_ptr = _ptr->right;
+			return *this;
+		}
 		if (_ptr->isnull && !_ptr->isrend)
 		{
 			_ptr = _ptr->parent;
@@ -89,7 +94,12 @@ public:
 
 	self& operator--(void)
 	{
-		if (!_ptr->left || _ptr->left->isrend)
+		if (_ptr->isnull && !_ptr->isrend)
+		{
+			_ptr = _ptr->parent;
+			return *this;
+		}
+		if (_ptr->left->isrend && !_ptr->parent->isnull)
 		{
 			_ptr = _ptr->left;
 			return *this;

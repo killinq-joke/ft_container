@@ -50,6 +50,7 @@ public:
 	{
 		deleteAll(this->root);
 		delete TNULL;
+		delete REND;
 	}
 
 	size_type size()
@@ -237,7 +238,7 @@ public:
 
 	void deleteNode(Pair data)
 	{
-		deleteNodeHelper(this->root, data->first);
+		deleteNodeHelper(this->root, data.first);
 	}
 
 	void printTree()
@@ -255,6 +256,7 @@ public:
 			_alloc.destroy(node);
 			_alloc.deallocate(node, 1);
 		}
+		root = TNULL;
 	}
 
 
@@ -391,10 +393,10 @@ private:
 
 		while (!node->isnull)
 		{
-			if (node->data->first == k)
+			if (node->data.first == k)
 				z = node;
 
-			if (comparator(node->data->first, k))
+			if (comparator(node->data.first, k))
 				node = node->right;
 			else
 				node = node->left;

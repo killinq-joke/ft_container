@@ -177,7 +177,17 @@ public:
 
 	void erase(iterator first, iterator last)
 	{
+		iterator tmp;
 
+		while (first != last)
+		{
+			tmp = first;
+			first++;
+			if (!_tree.search((*tmp).first)->isnull)
+			{
+				_tree.deleteNode(*tmp);
+			}
+		}
 	}
 
 	void	clear(void)
