@@ -19,8 +19,8 @@ public:
 	typedef typename allocator_type::const_reference		const_reference;
 	typedef typename allocator_type::pointer 				pointer;
 	typedef typename allocator_type::const_pointer			const_pointer;
-	typedef ft::binaryiterator<value_type> 			iterator;
-	typedef ft::binaryiterator<const value_type>	const_iterator;
+	typedef ft::binaryiterator<value_type> 					iterator;
+	typedef ft::binaryiterator<const value_type>			const_iterator;
 	typedef reverse_iterator<iterator>						reverse_iterator;
 	// typedef reverse_iterator<const_iterator>				const_reverse_iterator;
 	typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
@@ -79,10 +79,10 @@ public:
 		return iterator(_tree.min(_tree.getRoot()));
 	}
 
-	// const_iterator begin() const
-	// {
-	// 	return const_iterator(_tree.min(_tree.getRoot()));
-	// }
+	const_iterator begin() const
+	{
+		return const_iterator(_tree.min(_tree.getRoot()));
+	}
 
 	iterator end()
 	{
@@ -192,6 +192,16 @@ public:
 	{
 		_tree.deleteAll(_tree.getRoot());
 		_size = 0;
+	}
+
+	key_compare	key_comp() const
+	{
+		return _comparator;
+	}
+
+	value_compare	value_comp() const
+	{
+		return value_compare(_comparator);
 	}
 
 private:
