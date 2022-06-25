@@ -261,13 +261,13 @@ namespace ft
                 typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::iterator_category     iterator_category;
                 typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::value_type            value_type;
                 typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::difference_type       difference_type;
-                // typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::pointer               pointer;
-                // typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::reference             reference;
-                typedef typename ft::isConst<b, value_type&, const value_type&>::type reference;
-                typedef typename ft::isConst<b, value_type*, const value_type*>::type pointer;
+                typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::pointer               pointer;
+                typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::reference             reference;
+                // typedef typename ft::isConst<b, value_type&, const value_type&>::type reference;
+                // typedef typename ft::isConst<b, value_type*, const value_type*>::type pointer;
 
             private:
-                typedef typename ft::isConst<b, Node*, const Node*>::type nodePtr;
+                // typedef typename ft::isConst<b, Node*, const Node*>::type nodePtr;
                 pointer _elem;
         };
 
@@ -417,11 +417,8 @@ namespace ft
             const reverse_iterator<Iterator>& rhs) { return (rhs.base() - lhs.base()); }
 
     template <class Iterator_L, class Iterator_R>
-        bool operator-(const reverse_iterator<Iterator_L>& lhs,
+        typename reverse_iterator<Iterator_L>::difference_type operator-(const reverse_iterator<Iterator_L>& lhs,
                         const reverse_iterator<Iterator_R>& rhs) {
-                            // std::cerr << rhs.base() - lhs.base() << std::endl;
-                            // std::cerr << lhs.base() - rhs.base() << std::endl;
-                            std::cerr << "salut" << std::endl;
                             return (rhs.base() - lhs.base()); }
 
     template <class InputIterator1, class InputIterator2>
