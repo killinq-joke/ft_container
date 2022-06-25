@@ -5,7 +5,7 @@ namespace ft
 {
     
     template <typename T>
-        class random_access_iterator : ft::iterator<ft::random_access_iterator_tag, T>
+        class random_access_iterator : ft::iterator<ft::random_access_iterator_tag, T, 0>
         {
         public:
             typedef typename ft::iterator<ft::random_access_iterator_tag, T>::iterator_category     iterator_category;
@@ -22,6 +22,11 @@ namespace ft
 
             random_access_iterator(const random_access_iterator& x) : _ptr(x._ptr)
             {}
+
+            // operator random_access_iterator<const value_type>() const {
+            //     random_access_iterator<const value_type> out(_ptr);
+            //     return out;
+            // }
 
             random_access_iterator &operator=(const random_access_iterator& x)
             {

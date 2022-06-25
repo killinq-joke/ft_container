@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include "vector.hpp"
+// #include "stack.hpp"
+// #include "map.hpp"
 
 template <typename T>
 void show_vector(std::vector<T>& x)
@@ -34,6 +36,8 @@ int main()
     std::vector<int> v1(2, -4);
     std::vector<int> v2(v1);
     ft::vector<int> v0;
+    ft::map<int, int> map;
+    // ft::stack<int> stack;
 
     v1.insert(v1.begin(), 3);
     show_vector(v1);

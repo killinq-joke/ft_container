@@ -19,8 +19,8 @@ public:
 	typedef typename allocator_type::const_reference		const_reference;
 	typedef typename allocator_type::pointer 				pointer;
 	typedef typename allocator_type::const_pointer			const_pointer;
-	typedef ft::binaryiterator<value_type> 					iterator;
-	typedef ft::binaryiterator<const value_type>			const_iterator;
+	typedef ft::binaryiterator<value_type, 0> 					iterator;
+	typedef ft::binaryiterator<value_type, 1>			const_iterator;
 	typedef reverse_iterator<iterator>						reverse_iterator;
 	// typedef reverse_iterator<const_iterator>				const_reverse_iterator;
 	typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
@@ -49,7 +49,7 @@ public:
 	template <class InputIterator>
 	map(InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type(),
 			typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = nullptr)
-	: _tree(rbtree<value_type, key_compare>()), _comparator(comp), _alloc(alloc), _size(ft::distance(first, last))
+	: _tree(rbtree<value_type, key_compare>()), _alloc(alloc), _comparator(comp), _size(ft::distance(first, last))
 	{
 		this->insert(first, last);
 	}
@@ -81,7 +81,7 @@ public:
 
 	const_iterator begin() const
 	{
-		return const_iterator(_tree.min(_tree.getRoot()));
+		return const_iterator(iterator(_tree.min(_tree.getRoot())));
 	}
 
 	iterator end()
@@ -89,10 +89,10 @@ public:
 		return iterator(_tree.max(_tree.getRoot())->right);
 	}
 
-	// const_iterator end() const
-	// {
-	// 	return const_iterator(_tree.max(_tree.getRoot())->right);
-	// }
+	const_iterator end() const
+	{
+		return const_iterator(iterator(_tree.max(_tree.getRoot())->right));
+	}
 
 	reverse_iterator rbegin()
 	{
@@ -202,6 +202,54 @@ public:
 	value_compare	value_comp() const
 	{
 		return value_compare(_comparator);
+	}
+
+	iterator lower_bound (const key_type& k)
+	{
+		iterator first = this->begin();
+		iterator last = this->end();
+
+		while (first != last)
+		{
+			if (_comparator((*first).first, k) == false)
+				break;
+			first++;
+		}
+		return (first);
+	}
+
+	const_iterator lower_bound(const Key& key) const
+	{
+		return const_iterator(this->lower_bound(key));
+	}
+
+	iterator upper_bound (const key_type& k)
+	{
+		iterator first = this->begin();
+		iterator last = this->end();
+
+		while (first != last)
+		{
+			if (_comparator((*first).first, k) == true)
+				break;
+			first++;
+		}
+		return (first);
+	}
+
+	const_iterator upper_bound(const Key& key) const
+	{
+		return const_iterator(this->upper_bound(key));
+	}
+
+	pair<iterator,iterator> equal_range( const Key& key )
+	{
+		return make_pair(this->lower_bound(key), this->upper_bound(key));
+	}
+
+	pair<const_iterator,const_iterator> equal_range( const Key& key ) const
+	{
+		return make_pair(this->lower_bound(key), this->upper_bound(key));
 	}
 
 private:

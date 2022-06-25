@@ -5,8 +5,8 @@
 namespace ft
 {
 
-template <typename T>
-class binaryiterator : public ft::bidirectional_iterator<T>
+template <typename T, bool b>
+class binaryiterator : public ft::bidirectional_iterator<T, b>
 {
 
 public:
@@ -17,7 +17,7 @@ public:
 	typedef bidirectional_iterator_tag		iterator_category;
 	typedef ptrdiff_t						difference_type;
 
-	typedef binaryiterator<T>				self;
+	typedef binaryiterator<T, b>				self;
 	typedef ft::node<T>							Node;
 	typedef Node*							linkPtr;
 
@@ -40,6 +40,9 @@ public:
 		this->_ptr = x._ptr;
 		return (*this);
 	}
+
+    operator binaryiterator<const T, 1> () const
+	{ return (binaryiterator<const T, 1>(this->_ptr)); }
 
 	virtual ~binaryiterator() {}
 
@@ -136,13 +139,13 @@ private:
 };
 
 template <typename T>
-bool operator==(const ft::binaryiterator<T> lhs, const ft::binaryiterator<T> rhs)
+bool operator==(const ft::binaryiterator<T, b> lhs, const ft::binaryiterator<T, b> rhs)
 {
 	return (lhs.base() == rhs.base());
 }
 
 template <typename T>
-bool operator!=(const ft::binaryiterator<T> lhs, const ft::binaryiterator<T> rhs)
+bool operator!=(const ft::binaryiterator<T, b> lhs, const ft::binaryiterator<T, b> rhs)
 {
 	return (lhs.base() != rhs.base());
 }

@@ -5,9 +5,25 @@
 # include <sstream>
 # include <typeinfo>
 # include <iostream>
+# include "pair.hpp"
 
 namespace ft
 {
+	template <bool b, typename F, typename T>
+	struct isConst {
+	};
+
+	template <typename F, typename T>
+	struct isConst<0, F, T> {
+		typedef F type;
+	};
+
+	template <typename F, typename T>
+	struct isConst<1, F, T> {
+		typedef T type;
+	};
+
+
     template <typename T>
         std::string to_string(T n)
         {
@@ -36,45 +52,6 @@ namespace ft
 		return const_cast<T&>(value);
 	}
 
-    template <class T1, class T2>
-        struct pair
-        {
-        public :
-
-            typedef T1 first_type;
-            typedef T2 second_type;
-            first_type first;
-            second_type second;
-
-            pair()
-            :
-                first(),
-                second()
-            {}
-
-            template<class U, class V>
-                pair (const pair<U, V>& pr)
-                :
-                    first(pr.first),
-                    second(pr.second)
-                {}
-
-            pair (const first_type& a, const second_type& b)
-            :
-                first(a),
-                second(b)
-            {}
-
-            pair& operator=(const pair& pr)
-            {
-                if (*this == pr)
-                    return (*this);
-                remove_const(this->first) = pr.first;
-                this->second = pr.second;
-                return (*this);
-            }
-        };
-    
     template <class T1, class T2>
     bool operator== (const ft::pair<T1,T2>& lhs, const ft::pair<T1,T2>& rhs)
     {
@@ -277,16 +254,20 @@ namespace ft
                 typedef Category    iterator_category;
         };
 
-    template <class T>
-        class bidirectional_iterator : ft::iterator<ft::bidirectional_iterator_tag, T>
+    template <class T, bool b>
+        class bidirectional_iterator
         {  
-            typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::iterator_category     iterator_category;
-            typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::value_type            value_type;
-            typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::difference_type       difference_type;
-            typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::pointer               pointer;
-            typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::reference             reference;
-            
+            public:
+                typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::iterator_category     iterator_category;
+                typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::value_type            value_type;
+                typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::difference_type       difference_type;
+                // typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::pointer               pointer;
+                // typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::reference             reference;
+                typedef typename ft::isConst<b, value_type&, const value_type&>::type reference;
+                typedef typename ft::isConst<b, value_type*, const value_type*>::type pointer;
+
             private:
+                typedef typename ft::isConst<b, Node*, const Node*>::type nodePtr;
                 pointer _elem;
         };
 
@@ -433,11 +414,15 @@ namespace ft
     template <class Iterator>
         typename reverse_iterator<Iterator>::difference_type operator-(
             const reverse_iterator<Iterator>& lhs,
-            const reverse_iterator<Iterator>& rhs) { return (lhs.base() - rhs.base()); }
+            const reverse_iterator<Iterator>& rhs) { return (rhs.base() - lhs.base()); }
 
     template <class Iterator_L, class Iterator_R>
         bool operator-(const reverse_iterator<Iterator_L>& lhs,
-                        const reverse_iterator<Iterator_R>& rhs) { return (lhs.base() - rhs.base()); }
+                        const reverse_iterator<Iterator_R>& rhs) {
+                            // std::cerr << rhs.base() - lhs.base() << std::endl;
+                            // std::cerr << lhs.base() - rhs.base() << std::endl;
+                            std::cerr << "salut" << std::endl;
+                            return (rhs.base() - lhs.base()); }
 
     template <class InputIterator1, class InputIterator2>
         bool lexicographical_compare(InputIterator1 first1, InputIterator1 last1,
@@ -493,5 +478,6 @@ namespace ft
 		bool	isnull;
 		bool	isrend;
 	};
+
 
 } 

@@ -25,6 +25,7 @@ public:
     stack& operator=(const stack& other)
     {
 		this->_container = other.c();
+        // *this = other;
         return *this;
     }
 
