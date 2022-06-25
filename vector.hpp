@@ -202,7 +202,11 @@ namespace ft
 
 		void push_back(const value_type& val)
 		{
-			this->insert(this->end(), val);
+			// this->insert(this->end(), val);
+			if (_size >= _capacity)
+				this->_increase_capacity();
+			_alloc.construct(_start + _size, val);
+			_size++;
 		}
 
 		void pop_back()
@@ -223,7 +227,7 @@ namespace ft
 			diff = this->end() - position;
 			if (_size >= _capacity)
 				this->_increase_capacity();
-			it = this->end(); 
+			it = this->end();
 			i = 0;
 			while (i < diff)
 			{
