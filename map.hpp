@@ -27,6 +27,7 @@ public:
 	typedef size_t											size_type;
 	typedef rbtree<value_type, key_compare>					tree_type;
 	typedef typename tree_type::NodePtr						node_type;
+	typedef ft::map											self;
 
 	class value_compare : std::binary_function<value_type, value_type, bool>
 	{
@@ -42,7 +43,7 @@ public:
 	};
 
 	explicit map(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
-	: _tree(rbtree<value_type, key_compare>()), _comparator(comp), _alloc(alloc), _size(0)
+	: _tree(rbtree<value_type, key_compare>()), _alloc(alloc), _comparator(comp), _size(0)
 	{
 	}
 
@@ -76,12 +77,12 @@ public:
 
 	iterator begin()
 	{
-		return iterator(_tree.min(_tree.getRoot()));
+		return _tree.min(_tree.getRoot());
 	}
 
 	const_iterator begin() const
 	{
-		return const_iterator(iterator(_tree.min(_tree.getRoot())));
+		return _tree.min(_tree.getRoot());
 	}
 
 	iterator end()
@@ -91,7 +92,7 @@ public:
 
 	const_iterator end() const
 	{
-		return const_iterator(iterator(_tree.max(_tree.getRoot())->right));
+		return const_iterator(_tree.max(_tree.getRoot())->right);
 	}
 
 	reverse_iterator rbegin()
@@ -204,7 +205,7 @@ public:
 		return value_compare(_comparator);
 	}
 
-	iterator lower_bound (const key_type& k)
+	iterator lower_bound(const key_type& k)
 	{
 		iterator first = this->begin();
 		iterator last = this->end();
@@ -218,9 +219,9 @@ public:
 		return (first);
 	}
 
-	const_iterator lower_bound(const Key& key) const
+	const_iterator lower_bound(const key_type& k) const
 	{
-		return const_iterator(this->lower_bound(key));
+		return const_iterator(this->lower_bound(k));
 	}
 
 	iterator upper_bound (const key_type& k)
@@ -237,19 +238,19 @@ public:
 		return (first);
 	}
 
-	const_iterator upper_bound(const Key& key) const
+	const_iterator upper_bound(const key_type& k) const
 	{
-		return const_iterator(this->upper_bound(key));
+		return this->upper_bound(k);
 	}
 
-	pair<iterator,iterator> equal_range( const Key& key )
+	pair<iterator,iterator> equal_range( const key_type& k )
 	{
-		return make_pair(this->lower_bound(key), this->upper_bound(key));
+		return make_pair(this->lower_bound(k), this->upper_bound(k));
 	}
 
-	pair<const_iterator,const_iterator> equal_range( const Key& key ) const
+	pair<const_iterator,const_iterator> equal_range( const key_type& k ) const
 	{
-		return make_pair(this->lower_bound(key), this->upper_bound(key));
+		return make_pair(this->lower_bound(k), this->upper_bound(k));
 	}
 
 private:

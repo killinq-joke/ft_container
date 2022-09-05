@@ -11,15 +11,17 @@ class binaryiterator : public ft::bidirectional_iterator<T, b>
 
 public:
 	typedef T  value_type;
-	typedef T& reference;
-	typedef T* pointer;
+	typedef typename ft::isConst<b, value_type&, const value_type&>::type reference;
+	typedef typename ft::isConst<b, value_type*, const value_type*>::type pointer;
+	typedef ptrdiff_t						difference_type;
 
 	typedef bidirectional_iterator_tag		iterator_category;
-	typedef ptrdiff_t						difference_type;
 
 	typedef binaryiterator<T, b>				self;
 	typedef ft::node<T>							Node;
-	typedef Node*							linkPtr;
+private:
+	typedef typename ft::isConst<b, Node*, const Node*>::type linkPtr;
+public:
 
 	binaryiterator(void) : _ptr(nullptr)
 	{
@@ -41,8 +43,13 @@ public:
 		return (*this);
 	}
 
-    operator binaryiterator<const T, 1> () const
-	{ return (binaryiterator<const T, 1>(this->_ptr)); }
+	operator bidirectional_iterator<T, 1> () {
+		bidirectional_iterator<T, 1> ret(_ptr);
+		return ret;
+	}
+
+    // operator binaryiterator<const T, 1> () const
+	// { return (binaryiterator<const T, 1>(this->_ptr)); }
 
 	virtual ~binaryiterator() {}
 
@@ -134,17 +141,19 @@ public:
 		return (ret);
 	}
 
-private:
+	friend bool operator==(const self &x, const self &y) {return (x._ptr == y._ptr);}
+	friend bool operator!=(const self &x, const self &y) {return (x._ptr != y._ptr);}
+
 	linkPtr _ptr;
 };
 
-template <typename T>
+template <typename T, bool b>
 bool operator==(const ft::binaryiterator<T, b> lhs, const ft::binaryiterator<T, b> rhs)
 {
 	return (lhs.base() == rhs.base());
 }
 
-template <typename T>
+template <typename T, bool b>
 bool operator!=(const ft::binaryiterator<T, b> lhs, const ft::binaryiterator<T, b> rhs)
 {
 	return (lhs.base() != rhs.base());

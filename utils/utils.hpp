@@ -464,6 +464,10 @@ namespace ft
 		{
 		}
 
+        node(Pair& data) : data(data), isnull(false)
+        {
+        }
+
 		~node()
 		{}
 

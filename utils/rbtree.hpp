@@ -46,6 +46,19 @@ public:
 		return (newNode);
 	}
 
+	NodePtr createNode(Pair& val)
+	{
+		NodePtr newNode = _alloc.allocate(1);
+
+		_alloc.construct(newNode, Node(val));
+		newNode->color = BLACK;
+		newNode->left = TNULL;
+		newNode->right = TNULL;
+		newNode->parent = newNode;
+		newNode->isrend = false;
+		return (newNode);
+	}
+
 	~rbtree()
 	{
 		deleteAll(this->root);
@@ -159,10 +172,9 @@ public:
 
 	NodePtr insert(NodePtr begin, Pair val)
 	{
-		NodePtr node = this->createNode();
+		NodePtr node = this->createNode(val);
 
 		node->color = RED;
-		node->data = Pair(val);
 
 		NodePtr y = TNULL;
 		NodePtr x = begin;
